@@ -5,7 +5,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -65,6 +64,7 @@ public class BuildLibrary{
 				String title = (String) contents.get("title");
 				String track_id = (String) contents.get("track_id");
 				StoreData.storeData(similars, tags, artist, title, track_id);
+				System.out.println();
 				line = reader.readLine();
 			}
 		}catch (IOException e) {

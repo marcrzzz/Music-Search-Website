@@ -20,13 +20,14 @@ public class ParseArguments{
 						
 						if (arg.equals("-output")){
 							outputPath = args[i];
-							Path outPath = Paths.get(outputPath);
-							BuildLibrary.findFiles(outPath, ".json");
+							
 							//System.out.println(outputPath);
 								
 						}
 						else if (arg.equals("-input")){
 							inputPath = args[i];
+							Path inPath = Paths.get(inputPath);
+							BuildLibrary.findFiles(inPath, ".json");
 							//System.out.println(inputPath);
 							
 						}
