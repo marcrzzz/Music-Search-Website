@@ -16,7 +16,6 @@ import org.json.simple.parser.ParseException;
 public class BuildLibrary{
 	
 	private Path path;
-	private HashMap<String, TreeSet<StoreSong>> songMap;
 	
 	/**
 	 * constructor
@@ -24,7 +23,6 @@ public class BuildLibrary{
 	 */
 	public BuildLibrary(Path path){
 		this.path = path;
-		this.songMap = new HashMap<>();
 		findFiles(this.path, ".json");
 		
 	}
@@ -90,9 +88,10 @@ public class BuildLibrary{
 			String artist = (String) contents.get("artist");
 			String title = (String) contents.get("title");
 			String track_id = (String) contents.get("track_id");
-			StoreSong song = new StoreSong(artist, track_id, title, similars, tags);	
-			addSong(song);
-			System.out.println();
+			StoreSong song = new StoreSong(artist, track_id, title, similars, tags);
+			StoreLibrary lib = new StoreLibrary();
+			lib.addSong(song);
+			lib.debugByArtist();
 				
 		}catch (IOException e) {
 			System.err.println("Failed to open file on path: " + file.toString());
@@ -103,28 +102,7 @@ public class BuildLibrary{
 	}
 	
 	
-	/**
-	 * Add a song to the library.
-	 * Make sure to add a reference to the song object to all 
-	 * appropriate data structures.
-	 * @param song
-	 */
-	private void addSong(StoreSong song) {
-		String trackId = song.getTrackId();
-		if(!this.songMap.containsKey(trackId)){
-			this.songMap.put(trackId, new TreeSet<StoreSong>(new ByArtistComparator()));
-		}
-		this.songMap.get(trackId).add(song);
-		
-	}
-	/**
-	 * debug method
-	 */
-	public void debugByArtist() {
-		for(String artist: this.songMap.keySet()){
-			System.out.println(artist + ": " + this.songMap.get(artist));
-		}
-	}
+	
 		
 	
 	

@@ -49,7 +49,7 @@ public class ParseArguments{
 			
 			Path inPath = Paths.get(inputPath);
 			BuildLibrary lib = new BuildLibrary(inPath);
-			lib.debugByArtist();
+			
 			
 			
 			}
