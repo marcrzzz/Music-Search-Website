@@ -14,7 +14,7 @@ public class ParseArguments{
 		
 		if(args.length == 6){
 			try{
-				System.out.println(args.length);
+				//System.out.println(args.length);
 				for (int i = 0; i < args.length; i++) {
 						arg = args[i++];
 						
@@ -26,8 +26,7 @@ public class ParseArguments{
 						}
 						else if (arg.equals("-input")){
 							inputPath = args[i];
-							Path inPath = Paths.get(inputPath);
-							BuildLibrary.findFiles(inPath, ".json");
+							
 							//System.out.println(inputPath);
 							
 						}
@@ -47,6 +46,12 @@ public class ParseArguments{
 			    catch(RuntimeException exception){
 			    	System.out.println("runtime error");
 			    }
+			
+			Path inPath = Paths.get(inputPath);
+			BuildLibrary lib = new BuildLibrary(inPath);
+			lib.debugByArtist();
+			
+			
 			}
 		else{
 			
