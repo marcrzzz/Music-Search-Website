@@ -1,7 +1,8 @@
+package cs212.data;
 import java.util.ArrayList;
 
 
-public class StoreSong{
+public class Song{
 	
 	private String artist;
 	private String trackId;
@@ -17,7 +18,7 @@ public class StoreSong{
 	 * @param similars
 	 * @param tags
 	 */
-	public StoreSong(String artist, String trackId, String title, ArrayList<String> similars, ArrayList<String> tags) {
+	public Song(String artist, String trackId, String title, ArrayList<String> similars, ArrayList<String> tags){
 		this.artist = artist;
 		this.trackId = trackId;
 		this.title = title;
@@ -43,7 +44,7 @@ public class StoreSong{
 
 	/**
 	 * Return title.
-	 * @return
+	 * @return 
 	 */
 	public String getTitle() {
 		return this.title;
@@ -51,7 +52,7 @@ public class StoreSong{
 
 	/**
 	 * Return a list of the track IDs of all similar tracks.
-	 * @return
+	 * @return 
 	 */
 	public ArrayList<String> getSimilars() {
 		return this.similars;
@@ -59,7 +60,7 @@ public class StoreSong{
 
 	/**
 	 * Return a list of all tags for this track.
-	 * @return
+	 * @return 
 	 */
 	public ArrayList<String> getTags() {
 		return this.tags;

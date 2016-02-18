@@ -1,9 +1,12 @@
+package cs212.comparators;
 import java.util.Comparator;
 
-public class ByArtistComparator implements Comparator<StoreSong> {
+import cs212.data.Song;
+
+public class ByArtistComparator implements Comparator<Song> {
 
 	@Override
-	public int compare(StoreSong o1, StoreSong o2) {
+	public int compare(Song o1, Song o2) {
 		if(o1.getArtist().equals(o2.getArtist())) {
 			if(o1.getTitle().equals(o2.getTitle())){
 				return o1.getTrackId().compareTo(o2.getTrackId());
