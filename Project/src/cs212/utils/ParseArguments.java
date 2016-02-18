@@ -39,7 +39,7 @@ public class ParseArguments{
 			for (int i = 0; i < args.length; i++) {
 					this.arg = args[i++];
 					
-					if (arg.equals("-output") && !args[i].equals("-")){
+					if (arg.equals("-output")){
 						this.outputPath = args[i];
 					}
 					else if (arg.equals("-input")){

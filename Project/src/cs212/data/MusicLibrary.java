@@ -122,7 +122,6 @@ public class MusicLibrary{
 		try(BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"))){
 			
 			for(String tag: this.tagMap.navigableKeySet()){
-				
 				writer.write(tag + ": ");
 				TreeSet<String> trackIdSet = this.tagMap.get(tag);
 				
