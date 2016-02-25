@@ -124,6 +124,7 @@ public class BuildLibrary{
 	 * @param file
 	 * @param order
 	 */
+//TODO: move this logic to Driver	 
 	public void printData(Path file, String order){
 		if (order.equals("artist")){
 			this.library.orderByArtist(file);
