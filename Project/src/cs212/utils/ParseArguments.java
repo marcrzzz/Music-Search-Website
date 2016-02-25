@@ -37,6 +37,7 @@ public class ParseArguments{
 		try{
 
 			for (int i = 0; i < args.length; i++) {
+//TODO: do not update i inside of loop.				
 					this.arg = args[i++];
 					
 					if (arg.equals("-output")){
@@ -49,10 +50,12 @@ public class ParseArguments{
 						this.order = args[i];
 					}
 				}
+//TODO: do not catch unchecked exceptions. 				
 			}catch(RuntimeException exception){
 		    	System.out.println("runtime error");
 		    }
-		
+		    
+//TODO: move this logic into Driver.		
 		Path inPath = Paths.get(this.inputPath);
 		Path outPath = Paths.get(this.outputPath);
 		BuildLibrary lib = new BuildLibrary(inPath);
