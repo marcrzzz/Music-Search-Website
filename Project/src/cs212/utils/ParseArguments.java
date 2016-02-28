@@ -1,6 +1,6 @@
 package cs212.utils;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
+
 
 public class ParseArguments{
 	
@@ -27,39 +27,42 @@ public class ParseArguments{
 	 * method to get the arguments and set the
 	 * paths and order
 	 */
-	public void getArguments(){
-		//if this is false, print error 
+	public Boolean getArguments(){
+		
 		if(args.length != 6){
-			System.err.println("not enough arguments!");
-			return;
+			return false;
 		}
 		
-		try{
+		
 
-			for (int i = 0; i < args.length; i++) {
-//TODO: do not update i inside of loop.				
-					this.arg = args[i++];
-					
-					if (arg.equals("-output")){
-						this.outputPath = args[i];
-					}
-					else if (arg.equals("-input")){
-						this.inputPath = args[i];
-					}
-					else if (arg.equals("-order")){
-						this.order = args[i];
-					}
+		for (int i = 0; i < args.length-1; i+=2) {				
+				this.arg = args[i];
+				
+				if (arg.equals("-output")){
+					this.outputPath = args[i+1];
 				}
-//TODO: do not catch unchecked exceptions. 				
-			}catch(RuntimeException exception){
-		    	System.out.println("runtime error");
-		    }
-		    
-//TODO: move this logic into Driver.		
-		Path inPath = Paths.get(this.inputPath);
-		Path outPath = Paths.get(this.outputPath);
-		BuildLibrary lib = new BuildLibrary(inPath);
-		lib.printData(outPath, this.order);
+				else if (arg.equals("-input")){
+					this.inputPath = args[i+1];
+				}
+				else if (arg.equals("-order")){
+					this.order = args[i+1];
+				}
+			}				
+					
+		return true;
+	}
+	
+	
+	public String getOutput(){
+		return this.outputPath;
+	}
+	
+	public String getInput(){
+		return this.inputPath;
+	}
+	
+	public String getOrder(){
+		return this.order;
 	}
 		
 	

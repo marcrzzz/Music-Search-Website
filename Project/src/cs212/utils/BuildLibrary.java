@@ -119,27 +119,15 @@ public class BuildLibrary{
 	}
 	
 	/**
-	 * sends file path to the method that corresponds
-	 * with the order 
-	 * @param file
-	 * @param order
+	 * get method for the music library that we added songs to
+	 * @return MusicLibrary library
 	 */
-//TODO: move this logic to Driver	 
-	public void printData(Path file, String order){
-		if (order.equals("artist")){
-			this.library.orderByArtist(file);
-		}
-		else if(order.equals("title")){
-			this.library.orderByTitle(file);
-		}
-		else if(order.equals("tag")){
-			this.library.orderByTag(file);
-		}
-		else{
-			System.err.println("No such order argument!");
-		}
-		
+	public MusicLibrary getMusicLibrary(){
+		return this.library;
 	}
+	
+	
+
 		
 	
 	

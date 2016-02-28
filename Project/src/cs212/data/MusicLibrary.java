@@ -76,20 +76,9 @@ public class MusicLibrary{
 	 * 
 	 */
 	public void orderByArtist(Path file) {
-		try(BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"))){
-			
-			for(String artist: this.artistMap.navigableKeySet()){
-				TreeSet<Song> songSet = this.artistMap.get(artist);
-				
-				for (Song song: songSet){
-					writer.write(artist + " - " + song.getTitle());
-					writer.newLine();
-					}
-				} 
-			
-			}catch (IOException ex) {
-	        System.err.println("File output not available!");
-	    }
+		
+		orderSong(file, artistMap);
+		
 	}
 	
 	/**
@@ -97,20 +86,31 @@ public class MusicLibrary{
 	 * @param file
 	 */
 	public void orderByTitle(Path file) {
+		
+		orderSong(file, titleMap);
+		
+	}
+	
+	/**
+	 * helper method for order by title and artist
+	 * @param file
+	 * @param map
+	 */
+	public void orderSong(Path file, TreeMap<String, TreeSet<Song>> map){
 		try(BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"))){
 			
-			for(String title: this.titleMap.navigableKeySet()){
-				TreeSet<Song> songSet = this.titleMap.get(title);
+			for(String ele: map.navigableKeySet()){
+				TreeSet<Song> songSet = map.get(ele);
 				
 				for (Song song: songSet){
-					writer.write(song.getArtist() + " - " + title);
+					writer.write(song.getArtist() + " - " + song.getTitle());
 					writer.newLine();
 					}
 				}
 			
 		}catch (IOException ex) {
 	    	System.err.println("File output not available!");
-	    }
+	    }			
 	}
 	
 	/**
