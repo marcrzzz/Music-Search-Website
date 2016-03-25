@@ -14,25 +14,32 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import cs212.data.ConcurrentMusicLibrary;
 import cs212.data.MusicLibrary;
 import cs212.data.Song;
 
-public class BuildLibrary{
+public class BuildLibrary {
 	
 	private Path path;
-	private MusicLibrary library;
+	private WorkQueue queue;
+	private int threadNum;
+	private ConcurrentMusicLibrary library;
 	
 	/**
 	 * constructor
-	 * @param path
+	 * @param path, number of threads
 	 */
-	public BuildLibrary(Path path){
+	public BuildLibrary(Path path, int threadNum){
 		this.path = path;
-		this.library = new MusicLibrary();
+		this.threadNum = threadNum;
+		this.queue = new WorkQueue(this.threadNum);
+		this.library = new ConcurrentMusicLibrary();
 		findFiles(this.path, ".json");
 		
 		
 	}
+	
+	
 	
 	/**
 	 * creates arraylist of found JSON files
@@ -41,9 +48,11 @@ public class BuildLibrary{
 	 * @return arraylist
 	 */
 	private ArrayList<String> findFiles(Path path, String extension) {
-		
+		  
 		ArrayList<String> result = new ArrayList<>();
 		findFiles(path, extension, result);
+		queue.shutdown();
+		queue.awaitTermination();
 		return result;
 		
 	}
@@ -57,9 +66,10 @@ public class BuildLibrary{
 	private void findFiles(Path path, String extension, ArrayList<String> files){
 		
 		if(path.toString().toLowerCase().endsWith(extension)){	
-			parseFile(path);
+			queue.execute(new ParseFile(path));
 			
 		}
+		
 		else if(Files.isDirectory(path)){
 			
 			try(DirectoryStream<Path> dir = Files.newDirectoryStream(path)){
@@ -69,62 +79,92 @@ public class BuildLibrary{
 						}
 					
 			}catch (IOException e) {
+					
 					e.printStackTrace();
+					
 				}
 			}
+		
+		
+		
 		}
 	
-	/**
-	 * parses each file and extracts the necessary
-	 * information to create song and add it to
-	 * the library
-	 * @param file
-	 */
-	private void parseFile(Path file){
-		JSONParser parser = new JSONParser();
-		
-		try (BufferedReader reader = Files.newBufferedReader(file, Charset.forName("UTF-8"))){
-			
-			String line = reader.readLine();			
-			
-			JSONObject contents = (JSONObject) parser.parse(line);
-			String artist = (String) contents.get("artist");
-			String title = (String) contents.get("title");
-			String track_id = (String) contents.get("track_id");
-			JSONArray similars = (JSONArray) contents.get("similars");
-			JSONArray tags = (JSONArray) contents.get("tags");
-			ArrayList<String> simArray = new ArrayList<String>();
-			ArrayList<String> tagArray = new ArrayList<String>();
-			
-			for (Object t: tags){
-				if (t instanceof JSONArray){
-					tagArray.add((String) ((ArrayList<?>) t).get(0));
-				}
-			}
-			for (Object s: similars){
-				if (s instanceof JSONArray){
-					simArray.add((String) ((ArrayList<?>) s).get(0));
-				}
-			}
-			
-			Song song = new Song(artist, track_id, title, simArray, tagArray);
-			this.library.addSong(song);
-			
-		}catch (IOException e) {
-			System.err.println("Failed to open file on path: " + file.toString());
-		} 
-		catch (ParseException e) {
-			e.printStackTrace();
-		}
-	}
+	
 	
 	/**
 	 * get method for the music library that we added songs to
 	 * @return MusicLibrary library
 	 */
-	public MusicLibrary getMusicLibrary(){
+	public ConcurrentMusicLibrary getMusicLibrary(){
 		return this.library;
 	}
+	
+	
+	public class ParseFile implements Runnable{
+
+		private Path path;
+		
+		public ParseFile(Path path) {
+			this.path = path;
+		}
+
+		@Override
+		public void run() {
+			parseFile(this.path);
+			
+		}
+		
+		/**
+		 * parses each file and extracts the necessary
+		 * information to create song and add it to
+		 * the library
+		 * @param file
+		 */
+		private void parseFile(Path file){
+			JSONParser parser = new JSONParser();
+		
+			try (BufferedReader reader = Files.newBufferedReader(file, Charset.forName("UTF-8"))){
+				
+				String line = reader.readLine();			
+				
+				JSONObject contents = (JSONObject) parser.parse(line);
+				String artist = (String) contents.get("artist");
+				String title = (String) contents.get("title");
+				String track_id = (String) contents.get("track_id");
+				JSONArray similars = (JSONArray) contents.get("similars");
+				JSONArray tags = (JSONArray) contents.get("tags");
+				ArrayList<String> simArray = new ArrayList<String>();
+				ArrayList<String> tagArray = new ArrayList<String>();
+				
+				for (Object t: tags){
+					if (t instanceof JSONArray){
+						tagArray.add((String) ((ArrayList<?>) t).get(0));
+					}
+				}
+				for (Object s: similars){
+					if (s instanceof JSONArray){
+						simArray.add((String) ((ArrayList<?>) s).get(0));
+					}
+				}
+				
+				Song song = new Song(artist, track_id, title, simArray, tagArray);
+				library.addSong(song);
+				
+			}catch (IOException e) {
+				System.err.println("Failed to open file on path: " + file.toString());
+				
+			} 
+			catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+
+
+	}
+	
 	
 	
 

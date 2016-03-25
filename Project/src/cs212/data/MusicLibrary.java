@@ -10,12 +10,14 @@ import java.util.TreeSet;
 
 import cs212.comparators.ByArtistComparator;
 import cs212.comparators.ByTitleComparator;
+import cs212.utils.ReentrantLock;
 
-public class MusicLibrary{
+public class MusicLibrary {
 	
 	private TreeMap<String, TreeSet<Song>> artistMap;
 	private TreeMap<String, TreeSet<Song>> titleMap;
 	private TreeMap<String, TreeSet<String>> tagMap;
+	
 	
 	/**
 	 * constructor
@@ -24,6 +26,7 @@ public class MusicLibrary{
 		this.artistMap = new TreeMap<>();
 		this.titleMap = new TreeMap<>();
 		this.tagMap = new TreeMap<>();
+		
 	}
 	
 	/**
@@ -32,7 +35,7 @@ public class MusicLibrary{
 	 * appropriate data structures.
 	 * @param song
 	 */
-	public void addSong(Song song) {
+	public void addSong(Song song) {//read&write, but just need write lock
 		String artist = song.getArtist();
 		String title = song.getTitle();
 		ArrayList<String> tags = song.getTags();
@@ -58,15 +61,24 @@ public class MusicLibrary{
 		
 	}
 	
-	/**
-	 * get set of songs based on artist
-	 * @param artist
-	 * @return TreeSet of Song
-	 */
-	public TreeSet<Song> getSongsByArtist(String artist) {
-		return this.artistMap.get(artist);
-	}
 	
+	/**
+	 * Return a sorted set of all songs by a given artist.
+	 * @param artist
+	 * @return
+	 */
+//	//not thread safe need to change it
+//	public TreeSet<Song> getSongsByArtist(String artist) {
+//		return this.artistMap.get(artist);
+//	}
+//	//have them return json object that is representation of the data
+//	public TreeSet<Song> getSongByTitle(String title){
+//		return this.titleMap.get(title);
+//		
+//		//retrieve treeset of songs and converts it into jsonobj ex: {title:"songTitle", songs:[{artist:xxx, title:"songTitle",tags:ect},
+//		//{all info},{more info of songs} ]}
+//		//use get and put
+//	}
 	/**
 	 * methods that are used to order 
 	 * by the specified type(artist, title, or tag)
@@ -96,7 +108,7 @@ public class MusicLibrary{
 	 * @param file
 	 * @param map
 	 */
-	public void orderSong(Path file, TreeMap<String, TreeSet<Song>> map){
+	public void orderSong(Path file, TreeMap<String, TreeSet<Song>> map){//read
 		try(BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"))){
 			
 			for(String ele: map.navigableKeySet()){
@@ -118,7 +130,7 @@ public class MusicLibrary{
 	 * all trackIds with that tag
 	 * @param file
 	 */
-	public void orderByTag(Path file) {
+	public void orderByTag(Path file) {//read
 		try(BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"))){
 			
 			for(String tag: this.tagMap.navigableKeySet()){

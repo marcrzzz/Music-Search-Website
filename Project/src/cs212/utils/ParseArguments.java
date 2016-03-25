@@ -9,6 +9,7 @@ public class ParseArguments{
 	private String outputPath;
 	private String inputPath;
 	private String order;
+	private int threads;
 	
 	/**
 	 * constructor for ParseArguments
@@ -20,6 +21,7 @@ public class ParseArguments{
 		this.inputPath = null;
 		this.order = null;
 		this.args = args;
+		this.threads = 0;
 		
 	}
 	
@@ -29,7 +31,7 @@ public class ParseArguments{
 	 */
 	public Boolean getArguments(){
 		
-		if(args.length != 6){
+		if(args.length < 6){
 			return false;
 		}
 		
@@ -47,6 +49,14 @@ public class ParseArguments{
 				else if (arg.equals("-order")){
 					this.order = args[i+1];
 				}
+				else if(arg.equals("-threads")){
+					try{
+					this.threads = Integer.parseInt(args[i+1]);
+					}
+					catch(NumberFormatException e){
+						this.threads = 10;
+					}
+				}
 			}				
 					
 		return true;
@@ -63,6 +73,10 @@ public class ParseArguments{
 	
 	public String getOrder(){
 		return this.order;
+	}
+	
+	public int getThreads(){
+		return this.threads;
 	}
 		
 	
