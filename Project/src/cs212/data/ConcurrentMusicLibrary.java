@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.json.simple.JSONObject;
+
 import cs212.comparators.ByArtistComparator;
 import cs212.comparators.ByTitleComparator;
 import cs212.utils.ReentrantLock;
 
 public class ConcurrentMusicLibrary extends MusicLibrary {
-	//override ALL methods in Music library
 	
 	private ReentrantLock lock;
 	
@@ -22,23 +23,48 @@ public class ConcurrentMusicLibrary extends MusicLibrary {
 		super();
 		lock = new ReentrantLock();
 	}
+	
+	/**
+	 * Acquires lock write before
+	 * calling superclass method to add song
+	 */
 	@Override
-	public void addSong(Song song) {//read&write, but just need write lock
-		//get write lock
+	public void addSong(Song song) {
 		lock.lockWrite();
 		super.addSong(song);
 		lock.unlockWrite();
-		//release lock
-		
-		
 	}
 	
-
+	/**
+	 * Uses superclass method to 
+	 * return songs by an artist
+	 */
+	@Override
+	public JSONObject getSongsByArtist(String artist){
+		lock.lockRead();
+		JSONObject obj = super.getSongsByArtist(artist);
+		lock.unlockRead();
+		return obj;
+	}
+	
 	
 	/**
-	 * methods that are used to order 
-	 * by the specified type(artist, title, or tag)
-	 * and send to the specific path file
+	 * Uses superclass method
+	 * to return songs with a given
+	 * title
+	 */
+	@Override
+	public JSONObject getSongsByTitle(String title){
+		lock.lockRead();
+		JSONObject obj = super.getSongsByArtist(title);
+		lock.unlockRead();
+		return obj;
+	}
+	
+	/**
+	 *calls it's superclass methods 
+	 *to allow concurrency for ordering 
+	 *by specified order
 	 * Order by artist
 	 * @param file
 	 * 
@@ -65,7 +91,7 @@ public class ConcurrentMusicLibrary extends MusicLibrary {
 	 * @param file
 	 * @param map
 	 */
-	public void orderSong(Path file, TreeMap<String, TreeSet<Song>> map){//read
+	public void orderSong(Path file, TreeMap<String, TreeSet<Song>> map){
 		lock.lockRead();
 		super.orderSong(file, map);
 		lock.unlockRead();
@@ -76,7 +102,7 @@ public class ConcurrentMusicLibrary extends MusicLibrary {
 	 * all trackIds with that tag
 	 * @param file
 	 */
-	public void orderByTag(Path file) {//read
+	public void orderByTag(Path file) {
 		lock.lockRead();
 		super.orderByTag(file);
 		lock.unlockRead();

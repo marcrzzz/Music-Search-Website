@@ -1,6 +1,8 @@
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.json.simple.JSONObject;
+
 import cs212.data.ConcurrentMusicLibrary;
 import cs212.data.MusicLibrary;
 import cs212.utils.BuildLibrary;
@@ -10,7 +12,6 @@ import cs212.utils.WorkQueue;
 public class Driver {
 	
 	public static void main(String[] args) {
-		long start = System.currentTimeMillis();
 		ParseArguments a = new ParseArguments(args);
 		if(!a.getArguments()){
 			System.err.println("Not enough Arugments");
@@ -36,8 +37,6 @@ public class Driver {
 		else if(order.equals("tag")){
 			library.orderByTag(outPath);
 		}
-		
-		
 		
 	}
 

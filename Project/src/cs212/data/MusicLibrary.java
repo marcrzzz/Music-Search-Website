@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import cs212.comparators.ByArtistComparator;
 import cs212.comparators.ByTitleComparator;
 import cs212.utils.ReentrantLock;
@@ -35,7 +38,7 @@ public class MusicLibrary {
 	 * appropriate data structures.
 	 * @param song
 	 */
-	public void addSong(Song song) {//read&write, but just need write lock
+	public void addSong(Song song) {
 		String artist = song.getArtist();
 		String title = song.getTitle();
 		ArrayList<String> tags = song.getTags();
@@ -63,22 +66,56 @@ public class MusicLibrary {
 	
 	
 	/**
-	 * Return a sorted set of all songs by a given artist.
+	 * Return a jsonobject representation of all songs by a given artist.
 	 * @param artist
 	 * @return
 	 */
-//	//not thread safe need to change it
-//	public TreeSet<Song> getSongsByArtist(String artist) {
-//		return this.artistMap.get(artist);
-//	}
-//	//have them return json object that is representation of the data
-//	public TreeSet<Song> getSongByTitle(String title){
-//		return this.titleMap.get(title);
-//		
-//		//retrieve treeset of songs and converts it into jsonobj ex: {title:"songTitle", songs:[{artist:xxx, title:"songTitle",tags:ect},
-//		//{all info},{more info of songs} ]}
-//		//use get and put
-//	}
+	
+	public JSONObject getSongsByArtist(String artist) {
+		JSONObject jsonArtist = new JSONObject();
+		TreeSet<Song> set = this.artistMap.get(artist);
+		jsonArtist.put("artist", artist);
+		JSONArray songs = new JSONArray();
+		for(Song s: set){
+			JSONObject song = new JSONObject();
+			song.put("artist", s.getArtist());
+			song.put("title", s.getTitle());
+			song.put("trackId", s.getTrackId());
+			song.put("similars", s.getSimilars());
+			song.put("tags", s.getTags());
+			songs.add(song);
+		}
+		jsonArtist.put("songs", songs);
+		return jsonArtist;
+		
+	}
+	
+	/**
+	 * returns a jsonObject representation
+	 * of all songs with a certain title
+	 * @param title
+	 * @return
+	 */
+	public JSONObject getSongsByTitle(String title){
+		JSONObject jsonTitle = new JSONObject();
+		TreeSet<Song> set = this.titleMap.get(title);
+		jsonTitle.put("title", title);
+		JSONArray songs = new JSONArray();
+		for(Song s: set){
+			JSONObject song = new JSONObject();
+			song.put("artist", s.getArtist());
+			song.put("title", s.getTitle());
+			song.put("trackId", s.getTrackId());
+			song.put("similars", s.getSimilars());
+			song.put("tags", s.getTags());
+			songs.add(song);
+		}
+		jsonTitle.put("songs", songs);
+		return jsonTitle;
+		
+	}
+	
+	
 	/**
 	 * methods that are used to order 
 	 * by the specified type(artist, title, or tag)
