@@ -38,27 +38,25 @@ public class WorkQueue {
                     while (queue.isEmpty() && !shutdown) {
                         try
                         {
-                            queue.wait();//only wait when queue is empty and have not been shutdown
+                            queue.wait();
                         }
                         catch (InterruptedException ignored)
                         {
                         }
                     }
                     if(shutdown && queue.isEmpty()){
+                    	queue.notify();
                     	break;
                     }
-                    
                     r = (Runnable) queue.remove(0);
                 }
 
-                // If we don't catch RuntimeException, 
-                // the pool could leak threads!
-                
+               
             	try {
                     r.run();
                 }
                 catch (RuntimeException e) {
-                    // You might want to log something here
+                    e.printStackTrace();
                 } 
                   
             }
@@ -68,16 +66,15 @@ public class WorkQueue {
     }
     
     
-    public void shutdown(){//stop accepting new jobs
-    	shutdown = true; //atomic operation
+    public void shutdown(){
+    	shutdown = true; 
     }
     
    
-    public void awaitTermination(){//wait till everyone is finished
-    
+    public void awaitTermination(){
     	for (int i=0; i<nThreads; i++) {
     		 try {
-            	threads[i].join();//join, wait until entire run method has finished execution
+            	threads[i].join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

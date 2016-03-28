@@ -40,7 +40,6 @@ public class BuildLibrary {
 	}
 	
 	
-	
 	/**
 	 * creates arraylist of found JSON files
 	 * @param path
@@ -65,26 +64,22 @@ public class BuildLibrary {
 	 */
 	private void findFiles(Path path, String extension, ArrayList<String> files){
 		
-		if(path.toString().toLowerCase().endsWith(extension)){	
-			queue.execute(new ParseFile(path));
-			
-		}
-		
-		else if(Files.isDirectory(path)){
-			
+		if(Files.isDirectory(path)){
 			try(DirectoryStream<Path> dir = Files.newDirectoryStream(path)){
-					
-					for(Path entry: dir){
-						findFiles(entry, extension, files);
-						}
-					
+				
+				for(Path entry: dir){
+					findFiles(entry, extension, files);
+					}
+				
 			}catch (IOException e) {
-					
-					e.printStackTrace();
-					
-				}
+				
+				e.printStackTrace();
+				
 			}
-		
+		}
+		else{
+			queue.execute(new ParseFile(path,extension));
+		}
 		
 		
 		}
@@ -100,17 +95,26 @@ public class BuildLibrary {
 	}
 	
 	
+	
+	/**
+	 * inner class of BuildLibrary that is runnable
+	 * allows concurrency in parsing files
+	 * @author Marcrzzz
+	 *
+	 */
 	public class ParseFile implements Runnable{
 
 		private Path path;
+		private String extension;
 		
-		public ParseFile(Path path) {
+		public ParseFile(Path path, String extension) {
 			this.path = path;
+			this.extension = extension;
 		}
 
 		@Override
 		public void run() {
-			parseFile(this.path);
+			parseFile(this.path, this.extension);
 			
 		}
 		
@@ -120,9 +124,12 @@ public class BuildLibrary {
 		 * the library
 		 * @param file
 		 */
-		private void parseFile(Path file){
+		private void parseFile(Path file,String extension){
 			JSONParser parser = new JSONParser();
-		
+			if(!path.toString().toLowerCase().endsWith(extension)){
+				System.err.println("Failed to open file on path: " + file.toString());
+				return;
+			}
 			try (BufferedReader reader = Files.newBufferedReader(file, Charset.forName("UTF-8"))){
 				
 				String line = reader.readLine();			
@@ -157,20 +164,9 @@ public class BuildLibrary {
 			catch (ParseException e) {
 				e.printStackTrace();
 			}
+		
 		}
-		
-		
-		
-
-
+	
 	}
-	
-	
-	
-
-		
-	
-	
-	
 	
 }

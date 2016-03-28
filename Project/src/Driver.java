@@ -23,10 +23,7 @@ public class Driver {
 		if(threadNum < 1 || threadNum > 1000 ){
 			threadNum = 10;
 		}
-		if(!order.equals("artist")&&!order.equals("title")&&!order.equals("tag")){
-			System.err.println("No such order argument!");
-			return;
-		}
+
 		BuildLibrary lib = new BuildLibrary(inPath, threadNum);
 		ConcurrentMusicLibrary library = lib.getMusicLibrary();
 		
