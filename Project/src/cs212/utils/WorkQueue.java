@@ -23,6 +23,7 @@ public class WorkQueue {
     }
 
     public void execute(Runnable r) {
+//TODO: only add the job to the queue if you are not shutdown.
         synchronized(queue) {
             queue.add(r);
             queue.notify();
@@ -45,6 +46,7 @@ public class WorkQueue {
                         }
                     }
                     if(shutdown && queue.isEmpty()){
+//TODO: move the notify to shutdown.                    	
                     	queue.notify();
                     	break;
                     }
