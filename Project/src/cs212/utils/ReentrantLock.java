@@ -99,6 +99,7 @@ public class ReentrantLock {
 		if(readMap.get(id) == 1){
 	    	readMap.remove(id);
 	    }
+//TODO: make sure the calling thread actually has a lock.	    
 	    else{
 	    	int counter = readMap.get(id);
 	    	readMap.put(id, --counter);
@@ -132,6 +133,7 @@ public class ReentrantLock {
 		if(writeMap.get(id) == 1){
 	    	writeMap.remove(id);
 	    }
+//TODO: only unlock if the current thread has the lock.	    
 	    else{
 	    	int counter = writeMap.get(id);
 	    	writeMap.put(id, --counter);
