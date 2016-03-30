@@ -71,6 +71,6 @@ public class Song{
 	public String toString() {
 		return artist + " - " + title + " - " + trackId + " - " + similars + " - " +tags;
 	}
-	
+//TODO: make sure to do a deep copy by creating new array lists for tags and similars.	
 	
 }
