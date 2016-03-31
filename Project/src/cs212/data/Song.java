@@ -65,6 +65,14 @@ public class Song{
 	public ArrayList<String> getTags() {
 		return this.tags;
 	}
+	
+	public Song clone(){
+		ArrayList<String> sims = (ArrayList<String>) this.similars.clone();
+		ArrayList<String> tgs = (ArrayList<String>) this.tags.clone();
+		
+		Song clonedSong = new Song(this.artist, this.trackId, this.title, sims, tgs);
+		return clonedSong;
+	}
 	/**
 	 * toString method to debug
 	 */

@@ -51,7 +51,8 @@ public class ParseArguments{
 				}
 				else if(arg.equals("-threads")){
 					try{
-					this.threads = Integer.parseInt(args[i+1]);
+						this.threads = Integer.parseInt(args[i+1]);
+					
 					}
 					catch(NumberFormatException e){
 						this.threads = 10;
@@ -76,6 +77,9 @@ public class ParseArguments{
 	}
 	
 	public int getThreads(){
+		if(this.threads < 1 || this.threads > 1000 ){
+			this.threads = 10;
+		}
 		return this.threads;
 	}
 		

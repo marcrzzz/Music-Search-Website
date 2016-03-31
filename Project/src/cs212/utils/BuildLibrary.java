@@ -132,9 +132,8 @@ public class BuildLibrary {
 			}
 			try (BufferedReader reader = Files.newBufferedReader(file, Charset.forName("UTF-8"))){
 				
-				String line = reader.readLine();			
-//TODO: use the parse method that takes as input a reader.				
-				JSONObject contents = (JSONObject) parser.parse(line);
+				
+				JSONObject contents = (JSONObject) parser.parse(reader);
 				String artist = (String) contents.get("artist");
 				String title = (String) contents.get("title");
 				String track_id = (String) contents.get("track_id");

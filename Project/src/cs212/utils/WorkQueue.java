@@ -23,11 +23,12 @@ public class WorkQueue {
     }
 
     public void execute(Runnable r) {
-//TODO: only add the job to the queue if you are not shutdown.
-        synchronized(queue) {
-            queue.add(r);
-            queue.notify();
-        }
+    	if(!shutdown){
+	        synchronized(queue) {
+	            queue.add(r);
+	            queue.notify();
+	        }
+    	}
     }
 
     private class PoolWorker extends Thread {
@@ -45,9 +46,7 @@ public class WorkQueue {
                         {
                         }
                     }
-                    if(shutdown && queue.isEmpty()){
-//TODO: move the notify to shutdown.                    	
-                    	queue.notify();
+                    if(shutdown && queue.isEmpty()){   
                     	break;
                     }
                     r = (Runnable) queue.remove(0);
@@ -70,6 +69,10 @@ public class WorkQueue {
     
     public void shutdown(){
     	shutdown = true; 
+    	synchronized(queue){
+    		queue.notifyAll();
+    	}
+    	
     }
     
    

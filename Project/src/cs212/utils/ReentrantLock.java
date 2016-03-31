@@ -21,7 +21,7 @@ public class ReentrantLock {
 	 */
 	public synchronized boolean hasRead() {
 		Long id = Thread.currentThread().getId();
-		if(readMap.containsKey(id) && readMap.get(id) > 0){
+		if(readMap.containsKey(id)){
 			return true;
 		}
 		return false;
@@ -33,7 +33,7 @@ public class ReentrantLock {
 	 */
 	public synchronized boolean hasWrite() {
 		Long id = Thread.currentThread().getId();
-		if(writeMap.containsKey(id) && writeMap.get(id) > 0){
+		if(writeMap.containsKey(id)){
 			return true;
 		}
 		return false;
@@ -98,15 +98,16 @@ public class ReentrantLock {
 		Long id = Thread.currentThread().getId();
 		if(readMap.get(id) == 1){
 	    	readMap.remove(id);
-	    }
-//TODO: make sure the calling thread actually has a lock.	    
-	    else{
+	    }    
+	    else if(hasRead()){
 	    	int counter = readMap.get(id);
 	    	readMap.put(id, --counter);
+	    
 	    }
-	    if(readMap.size() == 0){
+		if(readMap.size() == 0){
 	    	notifyAll();
 	    }
+	    
 		
 	}
 
@@ -132,11 +133,11 @@ public class ReentrantLock {
 		Long id = Thread.currentThread().getId();
 		if(writeMap.get(id) == 1){
 	    	writeMap.remove(id);
-	    }
-//TODO: only unlock if the current thread has the lock.	    
-	    else{
+	    }    
+	    else if(hasWrite()){
 	    	int counter = writeMap.get(id);
 	    	writeMap.put(id, --counter);
+	    	
 	    }
 		if(writeMap.size() == 0 && readMap.size() ==0){
 			notifyAll();

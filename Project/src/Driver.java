@@ -21,9 +21,7 @@ public class Driver {
 		Path outPath = Paths.get(a.getOutput());
 		String order = a.getOrder();
 		int threadNum = a.getThreads();
-		if(threadNum < 1 || threadNum > 1000 ){
-			threadNum = 10;
-		}
+		
 
 		BuildLibrary lib = new BuildLibrary(inPath, threadNum);
 		ConcurrentMusicLibrary library = lib.getMusicLibrary();

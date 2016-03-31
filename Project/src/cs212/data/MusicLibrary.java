@@ -77,12 +77,13 @@ public class MusicLibrary {
 		jsonArtist.put("artist", artist);
 		JSONArray songs = new JSONArray();
 		for(Song s: set){
+			Song clone = s.clone();
 			JSONObject song = new JSONObject();
-			song.put("artist", s.getArtist());
-			song.put("title", s.getTitle());
-			song.put("trackId", s.getTrackId());
-			song.put("similars", s.getSimilars());
-			song.put("tags", s.getTags());
+			song.put("artist", clone.getArtist());
+			song.put("title", clone.getTitle());
+			song.put("trackId", clone.getTrackId());
+			song.put("similars", clone.getSimilars());
+			song.put("tags", clone.getTags());
 			songs.add(song);
 		}
 		jsonArtist.put("songs", songs);
@@ -102,12 +103,13 @@ public class MusicLibrary {
 		jsonTitle.put("title", title);
 		JSONArray songs = new JSONArray();
 		for(Song s: set){
+			Song clone = s.clone();
 			JSONObject song = new JSONObject();
-			song.put("artist", s.getArtist());
-			song.put("title", s.getTitle());
-			song.put("trackId", s.getTrackId());
-			song.put("similars", s.getSimilars());
-			song.put("tags", s.getTags());
+			song.put("artist", clone.getArtist());
+			song.put("title", clone.getTitle());
+			song.put("trackId", clone.getTrackId());
+			song.put("similars", clone.getSimilars());
+			song.put("tags", clone.getTags());
 			songs.add(song);
 		}
 		jsonTitle.put("songs", songs);
@@ -167,7 +169,7 @@ public class MusicLibrary {
 	 * all trackIds with that tag
 	 * @param file
 	 */
-	public void orderByTag(Path file) {//read
+	public void orderByTag(Path file) {
 		try(BufferedWriter writer = Files.newBufferedWriter(file, Charset.forName("UTF-8"))){
 			
 			for(String tag: this.tagMap.navigableKeySet()){
