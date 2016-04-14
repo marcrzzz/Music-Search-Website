@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -13,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import cs212.comparators.ByArtistComparator;
 import cs212.comparators.ByTitleComparator;
+import cs212.comparators.ByTrackIdComparator;
 import cs212.utils.ReentrantLock;
 
 public class MusicLibrary {
@@ -20,6 +22,7 @@ public class MusicLibrary {
 	private TreeMap<String, TreeSet<Song>> artistMap;
 	private TreeMap<String, TreeSet<Song>> titleMap;
 	private TreeMap<String, TreeSet<String>> tagMap;
+	private HashMap<String, Song> idMap;
 	
 	
 	/**
@@ -29,6 +32,7 @@ public class MusicLibrary {
 		this.artistMap = new TreeMap<>();
 		this.titleMap = new TreeMap<>();
 		this.tagMap = new TreeMap<>();
+		this.idMap = new HashMap<>();
 		
 	}
 	
@@ -41,7 +45,12 @@ public class MusicLibrary {
 	public void addSong(Song song) {
 		String artist = song.getArtist();
 		String title = song.getTitle();
+		String id = song.getTrackId();
 		ArrayList<String> tags = song.getTags();
+		
+		if(!this.idMap.containsKey(id)){
+			this.idMap.put(id, song);
+		}
 		
 		if(!this.artistMap.containsKey(artist)){
 			this.artistMap.put(artist, new TreeSet<Song>(new ByArtistComparator()));
@@ -74,19 +83,37 @@ public class MusicLibrary {
 	public JSONObject getSongsByArtist(String artist) {
 		JSONObject jsonArtist = new JSONObject();
 		TreeSet<Song> set = this.artistMap.get(artist);
+		
 		jsonArtist.put("artist", artist);
-		JSONArray songs = new JSONArray();
-		for(Song s: set){
-			Song clone = s.clone();
-			JSONObject song = new JSONObject();
-			song.put("artist", clone.getArtist());
-			song.put("title", clone.getTitle());
-			song.put("trackId", clone.getTrackId());
-			song.put("similars", clone.getSimilars());
-			song.put("tags", clone.getTags());
-			songs.add(song);
+		TreeSet<JSONObject> values = new TreeSet<JSONObject>(new ByTrackIdComparator());
+		JSONArray similars = new JSONArray();
+		
+		if(set==null){
+			jsonArtist.put("similars", similars);
+			return jsonArtist;
 		}
-		jsonArtist.put("songs", songs);
+		
+		for(Song s: set){
+			Song clone= s.clone();
+			ArrayList<String> similarsIds = clone.getSimilars();
+			
+			for(String simID: similarsIds ){
+				Song sim = this.idMap.get(simID);
+				if(sim != null){
+					Song cloneSim = sim.clone();
+					JSONObject jsonSim = new JSONObject();
+					jsonSim.put("title", cloneSim.getTitle());
+					jsonSim.put("artist", cloneSim.getArtist());
+					jsonSim.put("trackId", cloneSim.getTrackId());
+					values.add(jsonSim);
+				}
+			}
+		}
+		for(JSONObject o: values){
+			similars.add(o);
+		}
+		jsonArtist.put("similars", similars);
+		
 		return jsonArtist;
 		
 	}
@@ -101,19 +128,72 @@ public class MusicLibrary {
 		JSONObject jsonTitle = new JSONObject();
 		TreeSet<Song> set = this.titleMap.get(title);
 		jsonTitle.put("title", title);
-		JSONArray songs = new JSONArray();
-		for(Song s: set){
-			Song clone = s.clone();
-			JSONObject song = new JSONObject();
-			song.put("artist", clone.getArtist());
-			song.put("title", clone.getTitle());
-			song.put("trackId", clone.getTrackId());
-			song.put("similars", clone.getSimilars());
-			song.put("tags", clone.getTags());
-			songs.add(song);
+		TreeSet<JSONObject> values = new TreeSet<JSONObject>(new ByTrackIdComparator());
+		JSONArray similars = new JSONArray();
+		if(set==null){
+			jsonTitle.put("similars", similars);
+			return jsonTitle;
 		}
-		jsonTitle.put("songs", songs);
+		
+		for(Song s: set){
+			Song clone= s.clone();
+			ArrayList<String> similarsIds = clone.getSimilars();
+			
+			for(String simID: similarsIds ){
+				Song sim = this.idMap.get(simID);
+				if(sim != null){
+					Song cloneSim = sim.clone();
+					JSONObject jsonSim = new JSONObject();
+					jsonSim.put("title", cloneSim.getTitle());
+					jsonSim.put("artist", cloneSim.getArtist());
+					jsonSim.put("trackId", cloneSim.getTrackId());
+					values.add(jsonSim);
+				}
+			}
+		}
+		for(JSONObject o:values){
+			similars.add(o);
+		}
+		
+		jsonTitle.put("similars", similars);
+		
 		return jsonTitle;
+		
+	}
+	/**
+	 * returns a jsonObject representation
+	 * of all songs with a tag
+	 * @param tag
+	 * @return
+	 */
+	public JSONObject getSongsByTag(String tag){
+		JSONObject jsonTag = new JSONObject();
+		jsonTag.put("tag", tag);
+		TreeSet<String> idOfSongs = this.tagMap.get(tag);
+		TreeSet<JSONObject> values = new TreeSet<JSONObject>(new ByTrackIdComparator());
+		JSONArray songs = new JSONArray();
+		if(idOfSongs==null){
+			jsonTag.put("similars", songs);
+			return jsonTag;
+		}
+		
+		for(String id: idOfSongs){
+			Song s = this.idMap.get(id);
+			Song cloneSong = s.clone();
+			JSONObject jsonSong = new JSONObject();
+			jsonSong.put("title", cloneSong.getTitle());
+			jsonSong.put("artist", cloneSong.getArtist());
+			jsonSong.put("trackId", cloneSong.getTrackId());
+			values.add(jsonSong);
+		}
+		
+		for(JSONObject o: values){
+			songs.add(o);
+		}
+		jsonTag.put("similars", songs);
+		
+		return jsonTag;
+		
 		
 	}
 	

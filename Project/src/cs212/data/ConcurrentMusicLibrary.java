@@ -56,11 +56,23 @@ public class ConcurrentMusicLibrary extends MusicLibrary {
 	@Override
 	public JSONObject getSongsByTitle(String title){
 		lock.lockRead();
-		JSONObject obj = super.getSongsByArtist(title);
+		JSONObject obj = super.getSongsByTitle(title);
 		lock.unlockRead();
 		return obj;
 	}
 	
+	/**
+	 * Uses superclass method
+	 * to return songs with a given
+	 * tag
+	 */
+	@Override
+	public JSONObject getSongsByTag(String tag){
+		lock.lockRead();
+		JSONObject obj = super.getSongsByTag(tag);
+		lock.unlockRead();
+		return obj;
+	}
 	/**
 	 *calls it's superclass methods 
 	 *to allow concurrency for ordering 

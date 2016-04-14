@@ -10,6 +10,8 @@ public class ParseArguments{
 	private String inputPath;
 	private String order;
 	private int threads;
+	private String searchInput;
+	private String searchOutput;
 	
 	/**
 	 * constructor for ParseArguments
@@ -22,7 +24,8 @@ public class ParseArguments{
 		this.order = null;
 		this.args = args;
 		this.threads = 0;
-		
+		this.searchInput = null;
+		this.searchOutput = null;
 	}
 	
 	/**
@@ -58,6 +61,12 @@ public class ParseArguments{
 						this.threads = 10;
 					}
 				}
+				else if(arg.equals("-searchInput")){
+					this.searchInput = args[i+1];
+				}
+				else if(arg.equals("-searchOutput")){
+					this.searchOutput = args[i+1];
+				}
 			}				
 					
 		return true;
@@ -74,6 +83,14 @@ public class ParseArguments{
 	
 	public String getOrder(){
 		return this.order;
+	}
+	
+	public String getSearchIn(){
+		return this.searchInput;
+	}
+	
+	public String getSearchOut(){
+		return this.searchOutput;
 	}
 	
 	public int getThreads(){
