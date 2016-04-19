@@ -12,11 +12,17 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import cs212.data.ConcurrentMusicLibrary;
 import cs212.utils.BuildLibrary;
 
-public class FinderServer {
+public class MusicServer {
 
 	public static void main(String[] args) throws Exception{
-		
-		Server server = new Server(Integer.parseInt(args[0]));
+		int port = 0;
+		try{
+			port = Integer.parseInt(args[0]);
+		}catch(NumberFormatException e){
+			System.err.println("port must be a number: "+e);
+			return;
+		}
+		Server server = new Server(port);
 		ServletContextHandler servhandler = new ServletContextHandler(ServletContextHandler.SESSIONS);        
 		server.setHandler(servhandler);
 		
