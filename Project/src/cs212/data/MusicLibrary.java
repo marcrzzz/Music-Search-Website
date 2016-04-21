@@ -79,7 +79,6 @@ public class MusicLibrary {
 	 * @param artist
 	 * @return
 	 */
-//TODO: only clone objects that are returned.	
 	public JSONObject getSongsByArtist(String artist) {
 		JSONObject jsonArtist = new JSONObject();
 		TreeSet<Song> set = this.artistMap.get(artist);
@@ -94,17 +93,15 @@ public class MusicLibrary {
 		}
 		
 		for(Song s: set){
-			Song clone= s.clone();
-			ArrayList<String> similarsIds = clone.getSimilars();
+			ArrayList<String> similarsIds = s.getSimilars();
 			
 			for(String simID: similarsIds ){
 				Song sim = this.idMap.get(simID);
 				if(sim != null){
-					Song cloneSim = sim.clone();
 					JSONObject jsonSim = new JSONObject();
-					jsonSim.put("title", cloneSim.getTitle());
-					jsonSim.put("artist", cloneSim.getArtist());
-					jsonSim.put("trackId", cloneSim.getTrackId());
+					jsonSim.put("title", sim.getTitle());
+					jsonSim.put("artist", sim.getArtist());
+					jsonSim.put("trackId", sim.getTrackId());
 					values.add(jsonSim);
 				}
 			}
@@ -136,17 +133,15 @@ public class MusicLibrary {
 		}
 		
 		for(Song s: set){
-			Song clone= s.clone();
-			ArrayList<String> similarsIds = clone.getSimilars();
+			ArrayList<String> similarsIds = s.getSimilars();
 			
 			for(String simID: similarsIds ){
 				Song sim = this.idMap.get(simID);
 				if(sim != null){
-					Song cloneSim = sim.clone();
 					JSONObject jsonSim = new JSONObject();
-					jsonSim.put("title", cloneSim.getTitle());
-					jsonSim.put("artist", cloneSim.getArtist());
-					jsonSim.put("trackId", cloneSim.getTrackId());
+					jsonSim.put("title", sim.getTitle());
+					jsonSim.put("artist", sim.getArtist());
+					jsonSim.put("trackId", sim.getTrackId());
 					values.add(jsonSim);
 				}
 			}
@@ -176,14 +171,13 @@ public class MusicLibrary {
 			jsonTag.put("similars", songs);
 			return jsonTag;
 		}
-//TODO: only clone data that is returned.		
+		
 		for(String id: idOfSongs){
 			Song s = this.idMap.get(id);
-			Song cloneSong = s.clone();
 			JSONObject jsonSong = new JSONObject();
-			jsonSong.put("title", cloneSong.getTitle());
-			jsonSong.put("artist", cloneSong.getArtist());
-			jsonSong.put("trackId", cloneSong.getTrackId());
+			jsonSong.put("title", s.getTitle());
+			jsonSong.put("artist", s.getArtist());
+			jsonSong.put("trackId", s.getTrackId());
 			values.add(jsonSong);
 		}
 		
