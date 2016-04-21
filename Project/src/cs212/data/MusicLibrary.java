@@ -79,7 +79,7 @@ public class MusicLibrary {
 	 * @param artist
 	 * @return
 	 */
-	
+//TODO: only clone objects that are returned.	
 	public JSONObject getSongsByArtist(String artist) {
 		JSONObject jsonArtist = new JSONObject();
 		TreeSet<Song> set = this.artistMap.get(artist);
@@ -176,7 +176,7 @@ public class MusicLibrary {
 			jsonTag.put("similars", songs);
 			return jsonTag;
 		}
-		
+//TODO: only clone data that is returned.		
 		for(String id: idOfSongs){
 			Song s = this.idMap.get(id);
 			Song cloneSong = s.clone();
