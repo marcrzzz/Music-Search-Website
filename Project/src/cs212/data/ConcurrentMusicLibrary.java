@@ -73,6 +73,14 @@ public class ConcurrentMusicLibrary extends MusicLibrary {
 		lock.unlockRead();
 		return obj;
 	}
+	
+	@Override
+	public Song getSongById(String id){
+		lock.lockRead();
+		Song s = super.getSongById(id);
+		lock.unlockRead();
+		return s;
+	}
 	/**
 	 *calls it's superclass methods 
 	 *to allow concurrency for ordering 

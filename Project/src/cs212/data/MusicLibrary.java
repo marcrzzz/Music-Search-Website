@@ -191,7 +191,16 @@ public class MusicLibrary {
 		
 	}
 	
-	
+	/**
+	 * returns song by its trackid
+	 * @param tag
+	 * @return
+	 */
+	public Song getSongById(String id){
+		Song s = this.idMap.get(id);
+		Song sClone = s.clone();
+		return sClone;
+	}
 	/**
 	 * methods that are used to order 
 	 * by the specified type(artist, title, or tag)
