@@ -1,0 +1,8 @@
+{
+	"path": "input/lastfm_subset",
+	"username": "user23",
+	"password": "user23",
+	"db": "user23",
+	"host": "sql.cs.usfca.edu",
+	"port": "3306"
+}
