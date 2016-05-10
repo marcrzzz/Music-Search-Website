@@ -263,6 +263,7 @@ public class DBHelper {
 	 * @param id
 	 * @throws SQLException 
 	 */
+//TODO: use primitive types when possible.	 
 	public static Boolean checkFav(String user, String id) throws SQLException{
 		Connection con = null;
 		try {
