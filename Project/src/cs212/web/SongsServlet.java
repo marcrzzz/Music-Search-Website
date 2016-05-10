@@ -90,6 +90,8 @@ public class SongsServlet extends BaseServlet{
 			JSONObject o = (JSONObject) s;
 			String id = (String) o.get("trackId");
 			try {
+//TODO: rather than creating a db connection for each song in the result set, get the entire list of 
+// favorites and then iterate through to see which are in the result set.
 				if(DBHelper.checkFav(name, id)){
 					responseHtmlContent+="<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td>  "+img2+"</td></tr>";
 					
