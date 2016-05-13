@@ -39,22 +39,9 @@ public class  FavsServlet extends BaseServlet {
 			return;
 		}
 		
+		String style = style("Favs", "Favorites");
 		
-		String responseHtml = "<html" + 
-				"<head><title>Favs</title><style>"+
-				"h1{color: #8B008B; font: italic bold 30px Georgia, serif; align:center; }"+
-				"table{ background-color: #8B008B; } "+
-						"table, th, td { border: 5px solid black; border-color: white; border-collapse: collapse;}" +
-						"th, td { padding: 10px;text-align: center; color: white} " +
-				"a:link, a:visited {background-color: white; color: #8B008B;"+
-			    " text-decoration: none; }"+
-				".userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
-				"top:10px; right:10px; } "+
-				"</style></head>" +
-				"<body><h1>Favorites</h1>";
-		
-		
-		
+	
 		String responseHtmlContent = "<div class=\"userInfo\"><p>~~~"+
 				name+"~~~<p><a href=\"/search\">Search</a></p>"+
 				"<p><a href=\"/logout\">Logout</a></p>  </p></div>"+
@@ -62,7 +49,7 @@ public class  FavsServlet extends BaseServlet {
 		
 		ArrayList<String> results;
 		try {
-			results = (ArrayList<String>) DBHelper.showFavs(name);
+			results = (ArrayList<String>) DBHelper.getFavs(name);
 			for(String id: results){
 				Song s = lib.getSongById(id);
 				responseHtmlContent+="<tr><td>"+s.getTitle() +"</td></tr>";
@@ -83,7 +70,7 @@ public class  FavsServlet extends BaseServlet {
 		
 		PrintWriter writer = prepareResponse(response);
 		
-		writer.println(responseHtml+responseHtmlContent);
+		writer.println(style+responseHtmlContent);
 		
 		
 	}

@@ -3,6 +3,7 @@ package cs212.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -57,84 +58,67 @@ public class SongsServlet extends BaseServlet{
 		JSONArray similars = (JSONArray) songs.get("similars");
 		String search = searchHTML();
 		String userInfo = userInfo(name);
-		
-		String responseHtml = "<html" + 
-				"<head><title>Songs</title><style>"+
-				"table, th, td {border: 3px solid black;"+
-				"border-collapse: collapse; border-color: #8B008B;}"+
-				"h1{color: #8B008B; font: italic bold 30px Georgia, serif; }"+
-				".sel {background-color: white; }" +
-				"a:link, a:visited {background-color: white; color: #8B008B;"+
-			    "  text-decoration: none;  }"+
-				".userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
-				"top:10px; right:10px; } "+
-				".p{text-align: center; font: italic bold 15px Georgia, serif;}"+
-				"</style></head>" +
-				"<body><h1>Discover Music</h1>";
+		String style = style("Songs", "Discover Music");
 		
 		String responseNoSimilarsHtml = 
 				"<div class=\"p\"><p>Sorry there are no similars to "+ q +"! Try another search!</p></div>";
 		
 		
-		
-		String responseHtmlContent = "<div class=\"p\"><p>If you like "+ q  +" then you might also like...</p></div>"+
+		StringBuilder responseHtmlContent = new StringBuilder();
+		responseHtmlContent.append("<div class=\"p\"><p>If you like "+ q  +" then you might also like...</p></div>"+
 				"<table  width=\"50%\" align=\"center\">" +				
-				"<tr><td><strong>Artist</strong></td><td><strong>Song Title</strong></td>";
+				"<tr><td><strong>Artist</strong></td><td><strong>Song Title</strong></td>");
 		
-
-		String img = "<img id=\"myImage\" onclick=\"changeImage(this)\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/White_Stars_1.svg/2000px-White_Stars_1.svg.png\" alt=\"fav?\" style=\"width:20px;height:20px;\">";
+		String img = "<img id=\"myImage\" onclick=\"changeImage(this)\" src=\"http://www.clker.com/cliparts/T/y/k/o/D/E/white-star-md.png\" alt=\"fav?\" style=\"width:20px;height:20px;\">";
 		String img2 = "<img id=\"myImage2\"  src=\"http://pngimg.com/upload/star_PNG1595.png\" alt=\"fav\" style=\"width:20px;height:20px;\">";
+		ArrayList<String> favs = null;
+		try {
+			favs = DBHelper.getFavs(name);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
 		if(name != null){
-			responseHtmlContent+="<td><strong>Add to Favs</strong></td></tr>";
+			responseHtmlContent.append("<td><strong>Add to Favs</strong></td></tr>");
 		for(Object s: similars){
 			JSONObject o = (JSONObject) s;
 			String id = (String) o.get("trackId");
-			try {
-//TODO: rather than creating a db connection for each song in the result set, get the entire list of 
-// favorites and then iterate through to see which are in the result set.
-				if(DBHelper.checkFav(name, id)){
-					responseHtmlContent+="<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td>  "+img2+"</td></tr>";
-					
-				}
-				else{
-					responseHtmlContent+="<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td><a href=\"/addfav?trackID="+o.get("trackId")+"\">"+img+"</a></td></tr>";
-					
-				}
-				
-			} catch (SQLException e) {
-				logger.error("SQL EXCEPTION");
-				e.printStackTrace();
-			}
 			
+			if(favs.contains(id)){
+				responseHtmlContent.append("<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td>  "+img2+"</td></tr>");
+				
+			}
+			else{
+				responseHtmlContent.append("<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td><a href=\"/addfav?trackID="+o.get("trackId")+"\">"+img+"</a></td></tr>");
+			}
 		}
+		
 		}
 		else{
 			for(Object s: similars){
 				JSONObject o = (JSONObject) s;
 				
-				responseHtmlContent+="</tr><tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td></tr>";
+				responseHtmlContent.append("</tr><tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td></tr>");
 						
 			}
 		}
-		responseHtmlContent+="</table>"+
+		responseHtmlContent.append("</table>"+
 						"<script>"+
 						"function changeImage(img){"+
 						"   img.src = \"http://pngimg.com/upload/star_PNG1595.png\";}"+
 						
 						
 						"</script>;"+
-							"</body></html>";
+							"</body></html>");
 		
-		
-		
-		
+		String htmlString = responseHtmlContent.toString();
 		PrintWriter writer = prepareResponse(response);
-		String allResponses = responseHtml+search;
+		String allResponses = style+search;
 		String login = "<div class=\"userInfo\"><p><a href=\"/signup?status=null\">Create Account</a> </p></div>";
 		if(name != null){
 			logger.trace("user logged in using search");
 			if(similars.size()!=0){
-				writer.println(allResponses+responseHtmlContent+userInfo);
+				writer.println(allResponses+htmlString+userInfo);
 			}
 			else{
 				writer.println(allResponses+responseNoSimilarsHtml+userInfo);
@@ -143,7 +127,7 @@ public class SongsServlet extends BaseServlet{
 		else{
 			logger.trace("No user logged in using search");
 			if(similars.size()!=0){
-				writer.println(allResponses+login+responseHtmlContent);
+				writer.println(allResponses+login+htmlString);
 			}
 			else{
 				writer.println(allResponses+login+responseNoSimilarsHtml);

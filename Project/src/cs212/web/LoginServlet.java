@@ -41,11 +41,7 @@ public class LoginServlet extends BaseServlet{
 			}
 			
 		}
-		String responseHtml = "<html" + 
-				"<head><title>Login</title><style> form {align:center; } h1{color: #8B008B; "
-				+ "font: italic bold 30px Georgia, serif; } </style></head>" +
-				"<body>" +
-				"<h1>Login below</h1> ";
+		String style = style("Login", "Login Below");
 		
 		
 		String responseContent=
@@ -63,7 +59,7 @@ public class LoginServlet extends BaseServlet{
 					"</html>";
 		
 		PrintWriter writer = prepareResponse(response);
-		writer.println(responseHtml+error+responseContent);
+		writer.println(style+error+responseContent);
 		
 		
 	}
@@ -85,7 +81,7 @@ public class LoginServlet extends BaseServlet{
 		
 		HttpSession session = request.getSession();
 		session.setAttribute("name", userName);
-		
+		String style = style("Logged in", "Discover Music");
 		String responseHtml = "<html" + 
 				"<head><title>Logged in</title><style>.sel {background-color: white; } h1{color: #8B008B; "
 				+ "font: italic bold 30px Georgia, serif; } "+
@@ -107,7 +103,7 @@ public class LoginServlet extends BaseServlet{
 					"</html>";
 		
 		PrintWriter writer = prepareResponse(response);
-		writer.println(responseHtml+responseContent);
+		writer.println(style+responseContent);
 		
 		
 	}

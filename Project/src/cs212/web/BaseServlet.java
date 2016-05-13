@@ -26,6 +26,30 @@ public class BaseServlet extends HttpServlet{
 		return content;
 	}
 	
+	protected String style(String title, String header){
+		String content = "<html" + 
+				"<head><title>"+ title +"</title><style>"+
+//		"table, th, td {border: 3px solid black;"+
+//		"border-collapse: collapse; border-color: #8B008B;}"+
+		"table{ background-color: #8B008B; } "+
+		"table, th, td { border: 5px solid black; border-color: black; border-collapse: collapse;}" +
+		"th, td { padding: 10px;text-align: center; color: white} " +
+		"body{background-color: black; color: white}"+
+		"h1{color: #8B008B; font: italic bold 30px Georgia, serif; }"+
+		".sel {background-color: white; }" +
+		"a:link, a:visited {background-color: black; color: #8B008B;"+
+	    "  text-decoration: none;  }"+
+		".userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
+		"top:10px; right:10px; } "+
+		".p{text-align: center; font: italic bold 15px Georgia, serif;}"+
+		"</style></head>" +
+		"<body><h1>"+ header +"</h1>";
+		
+		return content;
+		
+	}
+	
+	
 	protected String searchHTML(){
 		String content="<form action=\"songs\" method=\"post\">" +
 				"Search by:"+

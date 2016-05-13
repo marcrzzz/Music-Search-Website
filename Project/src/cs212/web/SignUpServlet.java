@@ -30,13 +30,7 @@ public class SignUpServlet extends BaseServlet{
 		}
 		
 		String status = request.getParameter("status");
-		String responseHtml = "<html" + 
-				"<head><title>Sign Up</title><style> form {align:center; } h1{color: #8B008B; "
-				+ "font: italic bold 30px Georgia, serif; }  a:link, a:visited {background-color: white; color: #8B008B;"+
-			    "text-decoration: none; }"+
-				"</style></head>" +
-				"<body>" +
-				"<h1>Sign Up Below</h1> ";
+		String style = style("Sign Up", "Sign Up Below");
 		
 		String error = "";
 		if(status!=null){
@@ -74,7 +68,7 @@ public class SignUpServlet extends BaseServlet{
 					"</html>";
 		
 		PrintWriter writer = prepareResponse(response);
-		writer.println(responseHtml+error+responseContent);
+		writer.println(style+error+responseContent);
 	}
 	
 	
@@ -109,15 +103,7 @@ public class SignUpServlet extends BaseServlet{
 			
 			HttpSession session = request.getSession();
 			session.setAttribute("name", userName);
-			
-			String responseHtml = "<html" + 
-					"<head><title>Song Finder</title><style>.sel {background-color: white; } h1{color: #8B008B; "
-					+ "font: italic bold 30px Georgia, serif; } .userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
-					"top:20px; right:20px; } "+
-					"a:link, a:visited {background-color: white; color: #8B008B;"+
-					" text-decoration: none; }"+"</style></head>" +
-					"<body>" +
-					"<h1>Discover Music</h1> ";
+			String style = style("Song Finder", "Discover Music");
 	
 			
 			
@@ -139,7 +125,7 @@ public class SignUpServlet extends BaseServlet{
 						"</html>";
 			
 			PrintWriter writer = prepareResponse(response);
-			writer.println(responseHtml+responseContent);
+			writer.println(style+responseContent);
 			
 			
 		}

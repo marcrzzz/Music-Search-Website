@@ -20,20 +20,9 @@ public class SearchServlet extends BaseServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		HttpSession session = request.getSession();
+		String style = style("Song Finder", "Discover Music");
 		
-
-		String responseHtml = "<html" + 
-				"<head><title>Song Finder</title><style>.sel {background-color: white; } h1{color: #8B008B; "
-				+ "font: italic bold 30px Georgia, serif; } a:link, a:visited {background-color: white; color: #8B008B;"+
-			    " text-decoration: none; }"+
-				".userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
-				"top:10px; right:10px; } "+
-				".p{text-align: center; font: italic bold 15px Georgia, serif;}"+
-				"</style></head>" +
-				"<body>" +
-				"<h1>Discover Music</h1> ";
-		
-		String all = responseHtml;
+		String all = style;
 		String search = searchHTML();
 		
 		

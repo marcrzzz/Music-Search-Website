@@ -39,14 +39,8 @@ public class MusicServer {
 		Configurator.setLevel(SearchServlet.class.getName(), Level.TRACE);
 		Configurator.setLevel(SongsServlet.class.getName(), Level.TRACE);
 		Configurator.setLevel(AddFavServlet.class.getName(), Level.TRACE);
-		Configurator.setLevel(SearchServlet.class.getName(), Level.ERROR);
-		Configurator.setLevel(SongsServlet.class.getName(), Level.ERROR);
-		Configurator.setLevel(AddFavServlet.class.getName(), Level.ERROR);
-		Configurator.setLevel(FavsServlet.class.getName(), Level.ERROR);
 		Configurator.setLevel(LoginServlet.class.getName(), Level.TRACE);
-		Configurator.setLevel(LoginServlet.class.getName(), Level.ERROR);
 		Configurator.setLevel(SignUpServlet.class.getName(), Level.TRACE);
-		Configurator.setLevel(SignUpServlet.class.getName(), Level.ERROR);
 		
 		Server server = new Server(port);
 		ServletContextHandler servhandler = new ServletContextHandler(ServletContextHandler.SESSIONS);        

@@ -201,7 +201,7 @@ public class DBHelper {
 	 * @return arraylist ids
 	 * @throws SQLException
 	 */
-	public static ArrayList<String> showFavs(String username) throws SQLException{
+	public static ArrayList<String> getFavs(String username) throws SQLException{
 		Connection con = null;
 		try {
 			ArrayList<String> ids = new ArrayList<>();
@@ -258,40 +258,6 @@ public class DBHelper {
 	}
 	
 	
-	/**
-	 * checks to see if a song is in favorites for the user
-	 * @param id
-	 * @throws SQLException 
-	 */
-//TODO: use primitive types when possible.	 
-	public static Boolean checkFav(String user, String id) throws SQLException{
-		Connection con = null;
-		try {
-			con = getConnection();
-			String selectStmt = "SELECT * FROM favs where username=\""+user+"\";";
-			
-			PreparedStatement stmt = (PreparedStatement) con.prepareStatement(selectStmt);
-			
-			ResultSet result = stmt.executeQuery();
-			while (result.next()) {
-				String song = result.getString("trackID");
-				if(song.equals(id)){
-					return true;
-					
-				}
-			}
-			
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		finally{
-			con.close();
-		}
-		
-		return false;
-	}
 	
 	
 	/**
