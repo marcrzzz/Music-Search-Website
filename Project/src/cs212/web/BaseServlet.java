@@ -29,8 +29,6 @@ public class BaseServlet extends HttpServlet{
 	protected String style(String title, String header){
 		String content = "<html" + 
 				"<head><title>"+ title +"</title><style>"+
-//		"table, th, td {border: 3px solid black;"+
-//		"border-collapse: collapse; border-color: #8B008B;}"+
 		"table{ background-color: #8B008B; } "+
 		"table, th, td { border: 5px solid black; border-color: black; border-collapse: collapse;}" +
 		"th, td { padding: 10px;text-align: center; color: white} " +
