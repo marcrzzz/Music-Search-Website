@@ -115,11 +115,12 @@ public class SignUpServlet extends BaseServlet{
 			}
 			
 			String userInfo = userInfo(userName);
-			String searchStuff = searchHTML();
+			String searchStuff = searchHTML("none");
 			
 			String responseContent=
 						
 						searchStuff+
+						"<p><a class=\"a\" href=\"/search?status=private\"> go private </p>"+
 						userInfo+
 						"</body>" +
 						"</html>";

@@ -13,11 +13,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.mysql.jdbc.PreparedStatement;
+
+import cs212.api.FetchInfo;
+import cs212.comparators.ByArtistComparator;
+import cs212.comparators.ByPlayCountComparator;
+import cs212.data.ConcurrentMusicLibrary;
 public class DBHelper {
 	
 	static DBConfig dbconfig;
@@ -257,9 +263,339 @@ public class DBHelper {
 		
 	}
 	
+	/**
+	 * Removes a song as a favorite for a user
+	 * @param username
+	 * @throws SQLException
+	 */
+	public static void deleteFav(String username, String songID) throws SQLException{
+		Connection con = null;
+		try {
+			con = getConnection();
+			String selectStmt = "DELETE FROM favs WHERE username=? AND trackID=?;"; 
+			
+			PreparedStatement stmt = (PreparedStatement) con.prepareStatement(selectStmt);
+			stmt.setString(1, username);
+			stmt.setString(2, songID);
+			stmt.execute();
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		
+		
+	}
+	
+	/**
+	 * uses library to add artist info from lastfm api
+	 * @param lib
+	 * @throws SQLException 
+	 */
+	public static void addInfo(ConcurrentMusicLibrary lib) throws SQLException{
+		Connection con=null;
+		try{
+			con = getConnection();
+			if(!tableExists(con, "artistInfo")){
+				createTable("artistInfo");
+				TreeSet<String> artists = lib.getArtists();
+				System.out.println(artists.size());
+				for(String a: artists){
+					
+					FetchInfo info = new FetchInfo(a, "artist.getInfo");
+					JSONObject o = info.getInfo();
+					if(o==null){
+						DBHelper.updateArtistInfo(con, a, 0, 0, null);
+						continue;
+					}
+					JSONObject innerJSON =(JSONObject) o.get("artist");
+					if(innerJSON==null){
+						DBHelper.updateArtistInfo(con, a, 0, 0, null);
+						continue;
+					}
+					String name = (String) innerJSON.get("name");
+					JSONObject bio =(JSONObject) innerJSON.get("bio");
+					JSONObject stats =(JSONObject) innerJSON.get("stats");
+					if(bio==null){
+						if(stats==null){
+							DBHelper.updateArtistInfo(con, name, 0, 0, null);
+							continue;
+						}
+						String listeners = (String) stats.get("listeners");
+						String playcount = (String) stats.get("playcount");
+						int l = Integer.parseInt(listeners);
+						int p = Integer.parseInt(playcount);
+						DBHelper.updateArtistInfo(con, name, l, p, null);
+						return;
+						
+					}
+					if(stats==null){
+						String summary = (String) bio.get("summary");
+						DBHelper.updateArtistInfo(con, name, 0, 0, summary);
+						continue;
+					}
+					String listeners = (String) stats.get("listeners");
+					String playcount = (String) stats.get("playcount");
+					String summary = (String) bio.get("summary");
+					int l = 0;
+					int p = 0;
+					if(listeners==null || playcount==null){
+						if(playcount==null){
+							l = Integer.parseInt(listeners);
+						}
+						if(listeners==null){
+							p = Integer.parseInt(playcount);
+						}
+					}
+					else{
+						l = Integer.parseInt(listeners);
+						p = Integer.parseInt(playcount);
+					}
+					
+					DBHelper.updateArtistInfo(con, name, l, p, summary);
+				}
+				
+			}
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		
+		
+	}
 	
 	
 	
+	/**
+	 * helper method to add artist to userbase
+	 * @param con
+	 * @param name
+	 * @param l
+	 * @param p
+	 * @param summary
+	 */
+	public static void updateArtistInfo(Connection con, String name, int l, int p, String summary){
+		PreparedStatement updateStmt;
+		try {
+			updateStmt = (PreparedStatement) con.prepareStatement("INSERT INTO artistInfo (name, listeners, playcount, bio) VALUES (?, ?, ?, ?)");
+			updateStmt.setString(1, name);
+			updateStmt.setInt(2, l);
+			updateStmt.setInt(3, p);
+			updateStmt.setString(4, summary);
+			updateStmt.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	/**
+	 * gets an artist from database and returns json obj with all its info
+	 * @param a
+	 * @throws SQLException 
+	 */
+	public static JSONObject getArtist(String a) throws SQLException{
+		Connection con = null;
+		try{
+			con = getConnection(); 
+			String selectStmt = "SELECT * FROM artistInfo WHERE name=? ;"; 
+			
+			PreparedStatement stmt = (PreparedStatement) con.prepareStatement(selectStmt);
+			stmt.setString(1, a);
+			ResultSet result = stmt.executeQuery();
+			JSONObject o = new JSONObject();
+			while(result.next()){
+				String n = result.getString("name");
+				String bio = result.getString("bio");
+				int l = result.getInt("listeners");
+				int c = result.getInt("playcount");
+				o.put("listeners", l);
+				o.put("bio", bio);
+				o.put("artist", a);
+				o.put("playcount", c);
+				
+			}
+			return o;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		return null;
+		
+	}
+	
+	
+	/**
+	 * Gets artist info sorted by playcount 
+	 * @return
+	 * @throws SQLException
+	 */
+	public static TreeSet<JSONObject> getArtists() throws SQLException{
+		Connection con = null;
+		TreeSet<JSONObject> counts = new TreeSet<JSONObject>(new ByPlayCountComparator());
+		try {
+			con = getConnection();
+			String selectStmt = "SELECT * FROM artistInfo;"; 
+			
+			PreparedStatement stmt = (PreparedStatement) con.prepareStatement(selectStmt);
+			
+			ResultSet result = stmt.executeQuery();
+			while(result.next()){
+				JSONObject o = new JSONObject();
+				int c = result.getInt("playcount");
+				String a = result.getString("name");
+				o.put("artist", a);
+				o.put("playcount", c);
+				counts.add(o);
+				
+			}
+			
+			return counts;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * updates database to have user's new password
+	 * @param user
+	 * @param newPwd
+	 * @throws SQLException
+	 */
+	public static void changePwd(String user, String newPwd) throws SQLException{
+		Connection con = null;
+		try{
+			con = getConnection();
+			PreparedStatement updateStmt = (PreparedStatement) con.prepareStatement("UPDATE user SET password = ? WHERE username = ?;");
+			updateStmt.setString(1, newPwd);
+			updateStmt.setString(2, user);
+			updateStmt.execute();
+			
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		
+	}
+	
+	/**
+	 * returns a list of all songs in the user's history
+	 * @param username
+	 * @return
+	 * @throws SQLException
+	 */
+	public static ArrayList<String> showHistory(String username, String type) throws SQLException{
+		Connection con = null;
+		try {
+			ArrayList<String> searches = new ArrayList<>();
+			con = getConnection();
+			if(!tableExists(con, "history")){
+				createTable("history");
+			}
+			String selectStmt = "SELECT * FROM history where name=\""+username+"\" AND searchType=\""+type+"\";"; 
+			
+			PreparedStatement stmt = (PreparedStatement) con.prepareStatement(selectStmt);
+			
+			ResultSet result = stmt.executeQuery();
+			while(result.next()){
+				String s = result.getString("search");
+				searches.add(s);
+			}
+			return searches;
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * adds a song search to user's history
+	 * @param user
+	 * @param id
+	 * @throws SQLException
+	 */
+	public static void addToHistory(String user, String search, String type) throws SQLException{
+		
+		Connection con = null;
+		try{
+			con = getConnection();
+			if(!tableExists(con, "history")){
+				createTable("history");
+			}
+			PreparedStatement updateStmt = (PreparedStatement) con.prepareStatement("INSERT INTO history (name, search, searchType) VALUES (?, ?, ?)");
+			updateStmt.setString(1, user);
+			updateStmt.setString(2, search);
+			updateStmt.setString(3, type);
+			updateStmt.execute();
+			
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		
+		
+	}
+	
+	/**
+	 * Removes a users total history
+	 * @param username
+	 * @throws SQLException
+	 */
+	public static void deleteHistory(String username) throws SQLException{
+		Connection con = null;
+		try {
+			con = getConnection();
+			String selectStmt = "DELETE FROM history WHERE name=?;"; 
+			
+			PreparedStatement stmt = (PreparedStatement) con.prepareStatement(selectStmt);
+			stmt.setString(1, username);
+			stmt.execute();
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
+		
+		
+	}
 	/**
 	 * method that is used to create appropriate table
 	 * if it does not yet exist for whatever reason
@@ -282,6 +618,17 @@ public class DBHelper {
 					"CREATE TABLE favs" + 
 					"(username VARCHAR(100) not null, trackID VARCHAR(100) not null);");
 			
+		}
+		else if(table.equals("artistInfo")){
+			stmt.executeUpdate (
+					"CREATE TABLE artistInfo" + 
+					"(name VARCHAR(250) not null , listeners INTEGER, playcount INTEGER, bio TEXT);");
+		}
+
+		else if(table.equals("history")){
+			stmt.executeUpdate (
+					"CREATE TABLE history" + 
+					"(name VARCHAR(100) not null, search VARCHAR(100) not null, searchType VARCHAR(100) not null);");
 		}
 		con.close();
 	}

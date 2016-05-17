@@ -39,7 +39,6 @@ public class SongsServlet extends BaseServlet{
 	 */
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		HttpSession session = request.getSession();
-		String name = (String) session.getAttribute("name");
 		
 		String q = request.getParameter("query");
 		String type = request.getParameter("t");
@@ -55,8 +54,19 @@ public class SongsServlet extends BaseServlet{
 			songs = lib.getSongsByTag(q);
 		}
 		
+		
+		String status = "";
+		if(request.getParameter("status") == null){
+			status += "none";
+		}
+		else{
+			status += request.getParameter("status");
+		}
+		
+		
 		JSONArray similars = (JSONArray) songs.get("similars");
-		String search = searchHTML();
+		String search = searchHTML(status);
+		String name = (String) session.getAttribute("name");
 		String userInfo = userInfo(name);
 		String style = style("Songs", "Discover Music");
 		
@@ -85,11 +95,11 @@ public class SongsServlet extends BaseServlet{
 			String id = (String) o.get("trackId");
 			
 			if(favs.contains(id)){
-				responseHtmlContent.append("<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td>  "+img2+"</td></tr>");
+				responseHtmlContent.append("<tr><td>"+o.get("artist") +"</td><td><a class=\"s\" href=\"/song?songId="+id+"\">"+ o.get("title") +"</a></td><td>  "+img2+"</td></tr>");
 				
 			}
 			else{
-				responseHtmlContent.append("<tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td><td><a href=\"/addfav?trackID="+o.get("trackId")+"\">"+img+"</a></td></tr>");
+				responseHtmlContent.append("<tr><td>"+o.get("artist") +"</td><td><a class=\"s\" href=\"/song?songId="+id+"\">"+ o.get("title") +"</a></td><td><a  href=\"/addfav?trackID="+id+"\">"+img+"</a></td></tr>");
 			}
 		}
 		
@@ -98,7 +108,7 @@ public class SongsServlet extends BaseServlet{
 			for(Object s: similars){
 				JSONObject o = (JSONObject) s;
 				
-				responseHtmlContent.append("</tr><tr><td>"+o.get("artist") +"</td><td>"+ o.get("title") +"</td></tr>");
+				responseHtmlContent.append("</tr><tr><td>"+o.get("artist") +"</td><td><a class=\"s\" href=\"/song?songId="+o.get("trackId")+"\">"+ o.get("title") +"</a></td></tr>");
 						
 			}
 		}
@@ -114,10 +124,27 @@ public class SongsServlet extends BaseServlet{
 		String htmlString = responseHtmlContent.toString();
 		PrintWriter writer = prepareResponse(response);
 		String allResponses = style+search;
+		
+		if(name!=null && !status.equals("private")){
+			allResponses+="<p><a  href=\"/search?status=private\"> go private </p>";
+		}
+		else if(name!=null && status.equals("private")){
+			allResponses+="<p><a  href=\"/search?status=none\"> end private search </p>";
+		}
+		
 		String login = "<div class=\"userInfo\"><p><a href=\"/signup?status=null\">Create Account</a> </p></div>";
 		if(name != null){
 			logger.trace("user logged in using search");
 			if(similars.size()!=0){
+				if(!status.equals("private")){
+					
+					try {
+						DBHelper.addToHistory(name, q, type);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				writer.println(allResponses+htmlString+userInfo);
 			}
 			else{

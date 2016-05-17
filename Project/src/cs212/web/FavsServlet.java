@@ -41,10 +41,11 @@ public class  FavsServlet extends BaseServlet {
 		
 		String style = style("Favs", "Favorites");
 		
-	
-		String responseHtmlContent = "<div class=\"userInfo\"><p>~~~"+
-				name+"~~~<p><a href=\"/search\">Search</a></p>"+
-				"<p><a href=\"/logout\">Logout</a></p>  </p></div>"+
+		
+		String responseHtmlContent = "<div class=\"userInfo\"><font-color:white>~~~"+
+				name+"~~~</font><p><a href=\"/search\">Search</a></p>"+
+				"<p><a href=\"/history\">History</a> </p>"+
+				"<p><a href=\"/logout\">Logout</a></p> </p></div>"+
 				"<table  width=\"50%\" align=\"center\">";
 		
 		ArrayList<String> results;
@@ -52,7 +53,7 @@ public class  FavsServlet extends BaseServlet {
 			results = (ArrayList<String>) DBHelper.getFavs(name);
 			for(String id: results){
 				Song s = lib.getSongById(id);
-				responseHtmlContent+="<tr><td>"+s.getTitle() +"</td></tr>";
+				responseHtmlContent+="<tr><td>"+s.getTitle() +"</td><td><a class=\"f\" href=\"/removeFav?trackId="+ id +"\">X</a></td></tr>";
 			}
 		} catch (SQLException e) {
 			logger.error("SQL Exception");

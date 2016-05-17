@@ -19,8 +19,11 @@ public class BaseServlet extends HttpServlet{
 	
 	
 	protected String userInfo(String username){
-		String content="<div class=\"userInfo\">~~~"+
-				username+"~~~<p><a href=\"/favs\">My Favorites</a></p>"+
+		String content="<div class=\"userInfo\"><font-color:white>~~~"+
+				username+"~~~</font>"+
+				"<p><a href=\"/favs\">My Favorites</a></p>"+
+				"<p> <a href=\"/history\">History</a></p>"+
+				"<p> <a href=\"/settings\">Account Settings</a></p>"+
 				"<p> <a href=\"/logout\">Logout</a></p></div>";
 				
 		return content;
@@ -37,19 +40,29 @@ public class BaseServlet extends HttpServlet{
 		".sel {background-color: white; }" +
 		"a:link, a:visited {background-color: black; color: #8B008B;"+
 	    "  text-decoration: none;  }"+
-		".userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
+	    "a.s:link, a.s:visited { background-color: #8B008B; color: white;"+
+	    "  text-decoration: none;  }"+
+	    "a.a:link, a.a:visited { background-color:black; color: white;"+
+	    "  text-decoration: none;  }"+
+	    "a.f:link, a.f:visited { background-color: #8B008B; color: black;"+
+	    "  text-decoration: none;  }"+
+		".userInfo { color: white; font: italic bold 15px Georgia, serif; position:absolute; "+
 		"top:10px; right:10px; } "+
-		".p{text-align: center; font: italic bold 15px Georgia, serif;}"+
+		".p{text-align: center; font: italic bold 15px Georgia, serif; color:white}"+
+		".songInfo h2{color: #8B008B; text-align: center; font: italic bold 15px Georgia, serif;}"+
+		".songInfo p{color: white; text-align: center; }"+
+		"hr{border-color:#8B008B; width: 100px;}"+
 		"</style></head>" +
-		"<body><h1>"+ header +"</h1>";
+		"<body><h1>"+ header +"<img align=\"left\" src=\"http://sheldon-conrich.sheldonconrich.netdna-cdn.com/wp-content/uploads/2013/06/notes_Inverted_Web.jpg\" alt=\"logo\" style=\"width:100px;height:75px; \"></h1>";
 		
 		return content;
 		
 	}
 	
 	
-	protected String searchHTML(){
-		String content="<form action=\"songs\" method=\"post\">" +
+	protected String searchHTML(String status){
+		String content="<a href=\"/artists?sort=alpha\"> View All Artists </a><p></p>"+
+				"<form action=\"songs?status="+ status +"\" method=\"post\">" +
 				"Search by:"+
 				"<select class=\"sel\" name=\"t\">"+
 				  "<option value=\"artist\">Artist</option>"+

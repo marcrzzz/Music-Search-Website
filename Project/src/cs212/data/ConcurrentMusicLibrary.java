@@ -81,6 +81,18 @@ public class ConcurrentMusicLibrary extends MusicLibrary {
 		lock.unlockRead();
 		return s;
 	}
+	
+	/**
+	 * uses superclass method to get all artists
+	 */
+	@Override
+	public TreeSet<String> getArtists(){
+		lock.lockRead();
+		TreeSet<String> a = super.getArtists();
+		lock.unlockRead();
+		return a;
+		
+	}
 	/**
 	 *calls it's superclass methods 
 	 *to allow concurrency for ordering 

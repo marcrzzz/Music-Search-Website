@@ -21,9 +21,16 @@ public class SearchServlet extends BaseServlet {
 		
 		HttpSession session = request.getSession();
 		String style = style("Song Finder", "Discover Music");
+		String status = "";
+		if(request.getParameter("status") == null){
+			status += "none";
+		}
+		else{
+			status += request.getParameter("status");
+		}
 		
 		String all = style;
-		String search = searchHTML();
+		String search = searchHTML(status);
 		
 		
 		if(session.getAttribute("name") == null){
@@ -32,12 +39,17 @@ public class SearchServlet extends BaseServlet {
 		}	
 					
 		
-		if(session.getAttribute("name") != null){
+		if(session.getAttribute("name") != null && !status.equals("private")){
 			String userInfo = userInfo((String)session.getAttribute("name"));
-			all += search + userInfo + "</body>" +
+			all += search +  "<p><a  href=\"/search?status=private\"> go private </p>" +userInfo + "</body>" +
 					"</html>";
 			
 			
+		}
+		else if(session.getAttribute("name") != null && status.equals("private")){
+			String userInfo = userInfo((String)session.getAttribute("name"));
+			all += search +  "<p><a  href=\"/search?status=none\"> end private search </p>" +userInfo + "</body>" +
+					"</html>";
 		}
 		else{
 			all +=search +  "</body>" +

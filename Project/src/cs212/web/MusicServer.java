@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -18,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import cs212.Sql.DBHelper;
 import cs212.data.ConcurrentMusicLibrary;
 import cs212.utils.BuildLibrary;
 import org.apache.logging.log4j.Level;
@@ -64,7 +66,12 @@ public class MusicServer {
 						Path path = Paths.get(pathObj);
 						BuildLibrary lib = new BuildLibrary(path, 10);
 						ConcurrentMusicLibrary library = lib.getMusicLibrary();
-						
+						try {
+							DBHelper.addInfo(library);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						sce.getServletContext().setAttribute("musiclib", library);
 						
 					} catch (IOException e) {
@@ -87,9 +94,15 @@ public class MusicServer {
 		servhandler.addServlet(LogoutServlet.class, "/logout");
 		servhandler.addServlet(FavsServlet.class, "/favs");
 		servhandler.addServlet(AddFavServlet.class, "/addfav");
-		
+		servhandler.addServlet(ViewSongServlet.class, "/song");
+		servhandler.addServlet(ArtistsServlet.class, "/artists");
+		servhandler.addServlet(ArtistInfoServlet.class, "/artist");
+		servhandler.addServlet(AccountServlet.class, "/settings");
+		servhandler.addServlet(HistoryServlet.class, "/history");
+		servhandler.addServlet(ClearHistoryServlet.class, "/clear");
+		servhandler.addServlet(RemoveFavServlet.class, "/removeFav");
 		server.setHandler(servhandler);
-
+		
 		server.start();
 		server.join();
 		

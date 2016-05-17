@@ -37,7 +37,7 @@ public class LoginServlet extends BaseServlet{
 			}
 			else if (status.equals("notLoggedIn")){
 				logger.trace("User tried favs url without being signed in");
-				error+="<p><font color=#8B008B>Must be logged in to see Favs</font></p>";
+				error+="<p><font color=#8B008B>Must be logged in</font></p>";
 			}
 			
 		}
@@ -52,7 +52,6 @@ public class LoginServlet extends BaseServlet{
 					"<input type=\"text\" name=\"userName\">" +
 					"Password: "+
 					"<input type=\"password\" name=\"pwd1\">" +
-					"<p></p>"+
 					"<input type=\"submit\" value=\"Submit\"><br/>" +
 					"</form>" +
 					"</body>" +
@@ -82,22 +81,16 @@ public class LoginServlet extends BaseServlet{
 		HttpSession session = request.getSession();
 		session.setAttribute("name", userName);
 		String style = style("Logged in", "Discover Music");
-		String responseHtml = "<html" + 
-				"<head><title>Logged in</title><style>.sel {background-color: white; } h1{color: #8B008B; "
-				+ "font: italic bold 30px Georgia, serif; } "+
-				"a:link, a:visited {background-color: white; color: #8B008B;"+
-				" text-decoration: none; }"+
-				 ".userInfo{ color: #8B008B; font: italic bold 15px Georgia, serif; position:absolute; "+
-				"top:10px; right:10px; } "+"</style></head>" +
-				"<body>" +
-				"<h1>Discover Music</h1> ";
+	
+		
 		
 		String userInfo = userInfo(userName);
-		String searchStuff = searchHTML();
+		String searchStuff = searchHTML("none");
 		
 		String responseContent=
 					
 					searchStuff+
+					"<p><a  href=\"/search?status=private\"> go private </p>"+
 					userInfo+
 					"</body>" +
 					"</html>";

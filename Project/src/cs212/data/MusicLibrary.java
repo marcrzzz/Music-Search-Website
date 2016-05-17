@@ -198,8 +198,24 @@ public class MusicLibrary {
 	 */
 	public Song getSongById(String id){
 		Song s = this.idMap.get(id);
+		if(s==null){
+			return null;
+		}
 		Song sClone = s.clone();
 		return sClone;
+	}
+	
+	/**
+	 * used to get all artists included in the library
+	 * @return treeset
+	 */
+	public TreeSet<String> getArtists(){
+		TreeSet<String> artists = new TreeSet<String>();
+		for(String a : artistMap.navigableKeySet()){
+			artists.add(a);
+		}
+		return artists;
+		
 	}
 	/**
 	 * methods that are used to order 
